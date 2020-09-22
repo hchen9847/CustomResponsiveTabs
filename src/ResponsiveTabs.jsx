@@ -11,31 +11,26 @@ class ResponsiveTabs extends Component {
         this.state = {
             active: [0],
             windowWidth: window.innerWidth
+            //replace with Resize bool based on minimum size, so it's not triggered every resize
         };
         this.select = this.select.bind(this);
         this.handleResize = this.handleResize.bind(this);
+        this.generateTabTitles = this.generateTabTitles.bind(this);
     }
     select(event, newTab) {
-        // logic to determine to replace or add to ActiveTabs
         this.setState({ active: [newTab] });
-        //this.setState({ active: [...this.state.active, newTab] });
-        //remove "tab-active" classes from all components that have it (minus the corresponding tab content)
-        //var currentActive = ReactDOM.findDOMNode().getElementsByClassName('tab-active')
-        //var activeTabs = classnames("tab-active");
-        //activeTabs.map(this.setState({ active: this.state.inactive }));
-        //also find corresponding tab content to set active
-        //this.setState({
-        //  active: this.state.active
-        //});
-        //var tabChildContent = this.props.children.props.children;
-        //tabChildContent({
-        //active: this.state.active
-        //});
     }
 
     //resize/responsive handling
     handleResize(e) {
-        this.setState({ windowWidth: window.innerWidth });
+        //determine if windowWidth state needs to be updated and therefore if Tabs need to be re-rendered.
+        //if the new window size crosses the minimum desktop screen size threshold in either direction, update the state to trigger re-render.
+        const setResize =
+            (window.innerWidth < this.props.tabsWindowSize && this.state.windowWidth > this.props.tabsWindowSize) ||
+            (window.innerWidth > this.props.tabsWindowSize && this.state.windowWidth < this.props.tabsWindowSize);
+        if (setResize) {
+            this.setState({ windowWidth: window.innerWidth });
+        }
     }
 
     componentDidMount() {
@@ -46,12 +41,8 @@ class ResponsiveTabs extends Component {
         window.addEventListener("resize", this.handleResize);
     }
 
-    render() {
-        const components = this.props.tabs;
-        //const stateStyle = this.state.active ? classes.active : classes.inactive;
-        // eslint-disable-next-line arrow-body-style
-        const mobileView = this.state.windowWidth < this.props.tabsWindowSize;
-        const tabTitleItem = components.map((title, index) => {
+    generateTabTitles(components, mobileView) {
+        const tabTitleItems = components.map((title, index) => {
             return (
                 <TabTitle
                     key={index}
@@ -63,30 +54,24 @@ class ResponsiveTabs extends Component {
                     content={components[index]}
                 />
             );
-            // var ste = index === 0 ? "tab-active" : "";
-            // var i = index;
-            // return (
-            //     <li className={ste + " " + stateStyle} onClick={this.select} key={title}>
-            //         <TabTitle></TabTitle>
-            //     </li>
-            // );
         });
+        return tabTitleItems;
+    }
 
-        const tabContentItem = components.map(
-            (content, index) => <Tab key={index} isActive={this.state.active.indexOf(index) > -1} content={content} />
-            // var contentState = index === 0 ? "tab-active" : "";
-            // return (
-            //     <div className={contentState + " tab-pane mx-tabcontainer-pane " + stateStyle} key={content}>
-            //         <Tab></Tab>
-            //     </div>
-            // );
-        );
+    render() {
+        const components = this.props.tabs;
+        // eslint-disable-next-line arrow-body-style
+        const mobileView = this.state.windowWidth < this.props.tabsWindowSize;
+        //create components
+        const tabTitleItem = this.generateTabTitles(components, mobileView);
+        const tabContentItem = components.map((content, index) => (
+            <Tab key={index} isActive={this.state.active.indexOf(index) > -1} content={content} />
+        ));
 
         if (mobileView) {
             return (
                 <div className="responsive-tabs mobile">
                     <ul className="tabcontainer-tabs">{tabTitleItem}</ul>
-                    <div className="mx-tabcontainer-content">{tabContentItem}</div>
                 </div>
             );
         } else {
