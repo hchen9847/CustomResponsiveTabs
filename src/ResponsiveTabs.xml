@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<widget id="mendix.responsivetabs.ResponsiveTabs" pluginWidget="true" needsEntityContext="true" offlineCapable="true"
+        supportedPlatform="Web"
+    xmlns="http://www.mendix.com/widget/1.0/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.mendix.com/widget/1.0/ ../node_modules/mendix/custom_widget.xsd">
+    <name>Responsive Tabs</name>
+    <description>My widget description</description>
+    <icon/>
+    <properties>
+        <propertyGroup caption="General">
+            <property key="tabs" type="object" isList="true">
+                <caption>List of Tabs</caption>
+                <description>Tab Content</description>
+                <properties>
+                    <propertyGroup caption="Tab List">
+                        <property key="tabContent" type="widgets">
+                            <caption>Tab Content</caption>
+                            <description>Tab Content</description>
+                        </property>
+                        <property key="tabTitle" type="string">
+                            <caption>Input Tab text</caption>
+                            <description>Text that appears in the tab</description>
+                        </property>
+                    </propertyGroup>
+                </properties>
+            </property>
+            <property key="tabsWindowSize" type="integer" defaultValue="1280">
+                <caption>Mobile Screen Size</caption>
+                <description>The minimum window size for desktop rendering, in pixels. Anything below will result in the mobile view.</description>
+            </property>
+        </propertyGroup>
+    </properties>
+</widget>
